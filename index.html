@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Animated Shapes</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background-color: #f9f9f9;
+        }
+
+        canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        #tree {
+            position: absolute;
+            top: 20%;
+            left: 80%;
+            width: 200px;
+            height: 250px;
+            background-image: url("tree.png");
+            background-size: cover;
+        }
+    </style>
+</head>
+
+<body>
+    <canvas id="canvas"></canvas>
+    <div id="tree"></div>
+
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        const shapes = [];
+
+        class Shape {
+            constructor(x, y, size, color) {
+                this.x = x;
+                this.y = y;
+                this.size = size;
+                this.color = color;
+                this.speedX = Math.random() * 2 - 1;
+                this.speedY = Math.random() * 2 - 1;
+            }
+
+            draw() {
+                ctx.beginPath();
+                ctx.fillStyle = this.color;
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+                if (this.x + this.size > canvas.width || this.x - this.size < 0) {
+                    this.speedX *= -1;
+                }
+                if (this.y + this.size > canvas.height || this.y - this.size < 0) {
+                    this.speedY *= -1;
+                }
+            }
+        }
+
+        function createShapes() {
+            const colors = ['#ffafbd', '#ffd3b6', '#ffffba', '#baffc9', '#bae1ff'];
+            for (let i = 0; i < 30; i++) {
+                const x = Math.random() * canvas.width;
+                const y = Math.random() * canvas.height;
+                const size = Math.random() * 50 + 20;
+                const color = colors[Math.floor(Math.random() * colors.length)];
+                const shape = new Shape(x, y, size, color);
+                shapes.push(shape);
+            }
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            shapes.forEach(shape => {
+                shape.draw();
+                shape.update();
+            });
+        }
+
+        createShapes();
+        animate();
+
+        document.getElementById('tree').addEventListener('click', function() {
+            const apple = new Shape(canvas.width / 2, 0, 10, 'red');
+            apple.speedY = 2;
+            shapes.push(apple);
+        });
+    </script>
+</body>
+
+</html>
